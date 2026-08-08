@@ -1,7 +1,10 @@
 -- === CONFIG ===
-local BUTTON_COMP_ID = "button_001"
-local SYSTEM_ID = "gate_002"
-local COMM_LABEL = "comm_001"
+local config = require("config")
+
+local HOST_ID = config.HOST_ID
+local HOST_NAME = config.HOST_NAME
+local TARGET_ID = config.TARGET_ID
+local COMM_SERVER_ID = config.COMM_SERVER_ID
  
 -- === INIT ===
 local modem = peripheral.find("modem")
@@ -27,7 +30,7 @@ local function draw()
     -- Titel
     monitor.setCursorPos(2, 1)
     monitor.setTextColor(colors.white)
-    monitor.write("SYSTEM: " .. SYSTEM_ID)
+    monitor.write("SYSTEM: " .. HOST_NAME)
  
     -- Status anzeigen
     monitor.setCursorPos(2, 3)
@@ -56,15 +59,15 @@ end
  
 -- === SEND ===
 local function send(action)
-    local target = rednet.lookup("computer", COMM_LABEL)
+    local target = rednet.lookup("computer", COMM_SERVER_ID)
     if not target then
-        print("CommunicationComputer ", COMM_LABEL, " nicht gefunden!")
+        print("CommunicationComputer ", COMM_SERVER_ID, " nicht gefunden!")
         return
     end
  
     local msg = {
-        sender = BUTTON_COMP_ID,
-        id = SYSTEM_ID,
+        sender = HOST_ID,
+        id = TARGET_ID,
         action = action
     }
  
@@ -84,7 +87,7 @@ local function receiveLoop()
     while true do
         local sender, msg = rednet.receive()
  
-        if type(msg) == "table" and msg.id == SYSTEM_ID and msg.status then
+        if type(msg) == "table" and msg.id == TARGET_ID and msg.status then
             currentStatus = msg.status
             draw()
         end
