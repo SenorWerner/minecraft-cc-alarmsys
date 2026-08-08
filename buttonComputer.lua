@@ -5,6 +5,7 @@ local HOST_ID = config.HOST_ID
 local HOST_NAME = config.HOST_NAME
 local TARGET_ID = config.TARGET_ID
 local COMM_SERVER_ID = config.COMM_SERVER_ID
+local SENSOR_ID = config.SENSOR_ID
  
 -- === INIT ===
 local modem = peripheral.find("modem")
@@ -73,11 +74,27 @@ local function send(action)
  
     rednet.send(target, msg)
 end
+
+local function requestStatus(action)
+    local target = rednet.lookup("computer", COMM_SERVER_ID)
+    if not target then
+        print("CommunicationComputer ", COMM_SERVER_ID, " nicht gefunden!")
+        return
+    end
+ 
+    local msg = {
+        sender = HOST_ID,
+        id = SENSOR_ID,
+        action = action
+    }
+ 
+    rednet.send(target, msg)
+end
  
 -- === STATUS REQUEST LOOP ===
 local function requestStatusLoop()
     while true do
-        send("status")
+        requestStatus("status")
         sleep(2)
     end
 end
