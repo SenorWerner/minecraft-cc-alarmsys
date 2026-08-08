@@ -40,4 +40,4 @@ file.write(content)
 file.close()
 
 print("Gespeichert als: " .. newFile)
-print("Update abgeschlossen ✅")
+print("Update abgeschlossen")
