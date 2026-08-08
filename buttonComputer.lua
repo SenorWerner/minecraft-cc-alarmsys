@@ -1,6 +1,6 @@
 -- === CONFIG ===
 local config = require("config")
-
+ 
 local HOST_ID = config.HOST_ID
 local HOST_NAME = config.HOST_NAME
 local TARGET_ID = config.TARGET_ID
@@ -74,7 +74,7 @@ local function send(action)
  
     rednet.send(target, msg)
 end
-
+ 
 local function requestStatus(action)
     local target = rednet.lookup("computer", COMM_SERVER_ID)
     if not target then
@@ -95,6 +95,7 @@ end
 local function requestStatusLoop()
     while true do
         requestStatus("status")
+        print("Status Request sent")
         sleep(2)
     end
 end
@@ -104,7 +105,7 @@ local function receiveLoop()
     while true do
         local sender, msg = rednet.receive()
  
-        if type(msg) == "table" and msg.id == TARGET_ID and msg.status then
+        if type(msg) == "table" and (msg.id == TARGET_ID or msg.id == SENSOR_ID) and msg.status then
             currentStatus = msg.status
             draw()
         end
