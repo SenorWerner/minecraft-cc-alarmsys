@@ -10,7 +10,7 @@ rednet.open(peripheral.getName(modem))
 local monitor = peripheral.find("monitor")
 if not monitor then error("Kein Monitor gefunden") end
 
-monitor.setTextScale(2)
+monitor.setTextScale(1)
 
 -- === STATE ===
 local currentStatus = "unknown"
