@@ -105,9 +105,11 @@ local function inputLoop()
             if currentCommand == "activate" then
                 currentCommand = "deactivate"
                 send("deactivate")
+                send("pulse")
             elseif currentCommand == "deactivate" then
                 currentCommand = "activate"
-                send("activate")                
+                send("activate")    
+                send("pulse")
             end
         end
     end
