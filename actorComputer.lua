@@ -2,13 +2,13 @@
 local modem = peripheral.find("modem")
 if not modem then error("Kein Modem gefunden") end
 rednet.open(peripheral.getName(modem))
-
+ 
 local config = require("config")
-
+ 
 local HOST_ID = config.HOST_ID
 local HOST_NAME = config.HOST_NAME
 local COMM_SERVER_ID = config.COMM_SERVER_ID
-
+ 
  
 rednet.host("computer", HOST_ID)
  
@@ -18,7 +18,7 @@ local currentAction = "deactivate"
  
  
 -- === CONFIG ===
-local PULSE_TIME = 1
+local PULSE_TIME = 0.5
  
 -- === STATUS FUNCTION ===
 local function getStatus(action)
