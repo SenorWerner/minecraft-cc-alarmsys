@@ -18,7 +18,7 @@ local currentAction = "deactivate"
  
  
 -- === CONFIG ===
-local PULSE_TIME = 0.5
+local PULSE_TIME = 1
  
 -- === STATUS FUNCTION ===
 local function getStatus(action)
