@@ -9,15 +9,15 @@ print("Simple-Sensor-Turtle gestartet...")
 local function getStatus()
     if turtle.detect() then
         redstone.setOutput(SIGNAL_OUT_SIDE, true)
-        return "active"
+        return true
     else
         redstone.setOutput(SIGNAL_OUT_SIDE, false)
-        return "inactive"
+        return false
     end
   end
  
 -- === MAIN LOOP ===
 while true do
-  getStatus()
+  print(getStatus())
   sleep(1)
 end
