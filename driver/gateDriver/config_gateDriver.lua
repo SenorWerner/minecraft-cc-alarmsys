@@ -1,3 +1,3 @@
 return{
-  PULSE_TIME = "1"
+  PULSE_TIME = 1
 }
