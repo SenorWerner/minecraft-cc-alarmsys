@@ -152,6 +152,7 @@ os.setComputerLabel(hostname)
 local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/refs/heads/main/os/"
 
 local files = {
+    "core/main.lua",
     "core/run.lua",
     "core/network.lua",
     "core/service_manager.lua",
