@@ -1,4 +1,4 @@
-local updater = require("updater")
+local updater = require("os.updater")
 
 local function handle(sender, msg)
     if msg.action ~= "update" then return end
