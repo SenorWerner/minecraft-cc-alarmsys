@@ -24,7 +24,7 @@ end
 
 -- UI MODE
 if ... == nil then
-    local status = require("config.service_status")
+    local status = require("/config/service_status")
 
     while true do
         term.clear()
