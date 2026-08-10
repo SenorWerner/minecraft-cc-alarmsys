@@ -66,12 +66,6 @@ local function handler(msg, sender, protocol)
         id = HOST_ID,
         status = getStatus(currentAction)
     }
-    if msg.action == "status" then
-        return {
-        id = HOST_ID,
-        status = getStatus(currentAction)
-    }
-    end
         
 end
 
