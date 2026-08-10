@@ -1,70 +1,218 @@
--- === CONFIG ===
+-- =========================================================
+-- NETWORK
+-- =========================================================
+
 local DEBUG = true
 
--- === HANDLER REGISTRY ===
 local handlers = {}
 
--- === LOGGING ===
-local function logIn(sender, protocol, msg)
-    if not DEBUG then return end
+-- =========================================================
+-- LOGGING
+-- =========================================================
+
+local function logIncoming(sender, protocol, msg)
+
+    if not DEBUG then
+        return
+    end
 
     term.setTextColor(colors.green)
+
     write("[IN ] ")
+
     term.setTextColor(colors.white)
-    print(sender, protocol or "-")
+
+    print(
+        "FROM:",
+        sender,
+        "PROTOCOL:",
+        protocol or "-"
+    )
 
     print(textutils.serialize(msg))
 end
 
-local function logOut(target, protocol, msg)
-    if not DEBUG then return end
+
+local function logOutgoing(target, protocol, msg)
+
+    if not DEBUG then
+        return
+    end
 
     term.setTextColor(colors.red)
+
     write("[OUT] ")
+
     term.setTextColor(colors.white)
-    print(target, protocol or "-")
+
+    print(
+        "TO:",
+        target,
+        "PROTOCOL:",
+        protocol or "-"
+    )
 
     print(textutils.serialize(msg))
 end
 
--- === REGISTER ===
-local function register(protocol, fn)
-    if not handlers[protocol] then
-        handlers[protocol] = {}
+
+local function logError(message)
+
+    term.setTextColor(colors.orange)
+
+    print("[NETWORK ERROR]", message)
+
+    term.setTextColor(colors.white)
+end
+
+
+-- =========================================================
+-- REGISTER SERVICE HANDLER
+-- =========================================================
+
+local function register(handler)
+
+    if type(handler) ~= "function" then
+        logError("Versuch, ungültigen Handler zu registrieren.")
+        return false
     end
-    table.insert(handlers[protocol], fn)
+
+    table.insert(handlers, handler)
+
+    return true
 end
 
--- === SEND WRAPPER ===
+
+-- =========================================================
+-- SEND
+-- =========================================================
+
 local function send(target, msg, protocol)
-    logOut(target, protocol, msg)
-    return rednet.send(target, msg, protocol)
+
+    logOutgoing(
+        target,
+        protocol,
+        msg
+    )
+
+    local ok, result = pcall(
+        rednet.send,
+        target,
+        msg,
+        protocol
+    )
+
+    if not ok then
+        logError(
+            "Fehler beim Senden: " .. tostring(result)
+        )
+
+        return false
+    end
+
+    return result
 end
 
--- === MAIN LOOP ===
+
+-- =========================================================
+-- NETWORK LOOP
+-- =========================================================
+
 local function run()
+
+    print("Network gestartet.")
+    print("Registrierte Handler:", #handlers)
+
     while true do
-        local sender, msg, protocol = rednet.receive()
 
-        logIn(sender, protocol, msg)
+        local ok, sender, msg, protocol =
+            pcall(rednet.receive)
 
-        if handlers[protocol] then
-            for _, fn in ipairs(handlers[protocol]) do
-                local ok, err = pcall(fn, sender, msg, protocol)
+        -- -------------------------------------------------
+        -- Fehler beim Receive
+        -- -------------------------------------------------
 
-                if not ok then
-                    term.setTextColor(colors.orange)
-                    print("[ERROR Handler]:", err)
-                    term.setTextColor(colors.white)
+        if not ok then
+
+            logError(
+                "rednet.receive(): " .. tostring(sender)
+            )
+
+            sleep(1)
+
+        else
+
+            logIncoming(
+                sender,
+                protocol,
+                msg
+            )
+
+            -- -------------------------------------------------
+            -- Paket an ALLE registrierten Handler geben
+            -- -------------------------------------------------
+
+            for index, handler in ipairs(handlers) do
+
+                local handlerOK, result =
+                    pcall(
+                        handler,
+                        msg,
+                        sender,
+                        protocol
+                    )
+
+                -- ---------------------------------------------
+                -- Handler hat einen Fehler verursacht
+                -- ---------------------------------------------
+
+                if not handlerOK then
+
+                    logError(
+                        "Handler " ..
+                        tostring(index) ..
+                        " Fehler: " ..
+                        tostring(result)
+                    )
+
+                -- ---------------------------------------------
+                -- Handler hat eine Antwort zurückgegeben
+                -- ---------------------------------------------
+
+                elseif result ~= nil
+                    and result ~= false then
+
+                    -- Nur Tabellen als Antwort akzeptieren
+                    if type(result) == "table" then
+
+                        send(
+                            sender,
+                            result,
+                            protocol
+                        )
+
+                    else
+
+                        logError(
+                            "Handler " ..
+                            tostring(index) ..
+                            " hat keinen gültigen Response-Typ zurückgegeben."
+                        )
+
+                    end
                 end
             end
         end
     end
 end
 
--- === EXPORT ===
+
+-- =========================================================
+-- EXPORT
+-- =========================================================
+
 return {
     register = register,
-    run = run,
-    send = send
+    send = send,
+    run = run
 }
