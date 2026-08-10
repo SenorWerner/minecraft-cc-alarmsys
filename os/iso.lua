@@ -187,7 +187,7 @@ end
 local startup = fs.open("startup.lua", "w")
 
 startup.write([[
-shell.run("os/run.lua")
+shell.run("core/run.lua")
 ]])
 
 startup.close()
