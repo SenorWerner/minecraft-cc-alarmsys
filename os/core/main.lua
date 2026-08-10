@@ -1,4 +1,4 @@
-local config = require("config.config")
+local config = require("/config/config")
 
 local function menu()
     while true do
