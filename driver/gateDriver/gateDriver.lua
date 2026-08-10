@@ -4,6 +4,7 @@ local core_config = require("/config/config")
 
 local HOST_ID = core_config.HOST_ID
 local PULSE_TIME = config.PULSE_TIME or 0.5
+local PROTOCOL = config.PROTOCOL or "control"
 
 -- === STATE ===
 local currentAction = "deactivate"
@@ -42,7 +43,8 @@ local function pulse()
 end
 
 -- === MESSAGE HANDLER ===
-local function handler(msg, sender)
+local function handler(msg, sender, protocol)
+    if protocol ~= PROTOCOL then return false end
     if msg.id ~= HOST_ID then return end
 
     if msg.action == "activate" then
