@@ -42,7 +42,7 @@ local function pulse()
 end
 
 -- === MESSAGE HANDLER ===
-local function handle(msg, sender)
+local function run(msg, sender)
     if msg.id ~= HOST_ID then return end
 
     if msg.action == "activate" then
@@ -66,17 +66,8 @@ local function handle(msg, sender)
     }
 end
 
--- === OPTIONAL BACKGROUND LOOP ===
-local function run()
-    while true do
-        sleep(5)
-        -- optional: Status broadcast / watchdog
-    end
-end
-
 -- === EXPORT ===
 return {
     protocol = "gate",   -- frei wählbar (z. B. "system")
-    handle = handle,
     run = run
 }
