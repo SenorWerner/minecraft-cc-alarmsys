@@ -118,6 +118,32 @@ return {
 
 configFile.close()
 
+-- === SERVICE STATUS SETUP ===
+
+local SERVICE_STATUS_FILE = "/config/service_status.lua"
+
+if not fs.exists("/config") then
+    fs.makeDir("/config")
+end
+
+if not fs.exists(SERVICE_STATUS_FILE) then
+    print("Erstelle service_status.lua ...")
+
+    local f = fs.open(SERVICE_STATUS_FILE, "w")
+
+    f.write([[
+return {
+    network_handler = true,
+    updater_listener = true,
+    heartbeat = true
+}
+]])
+
+    f.close()
+else
+    print("service_status.lua existiert bereits.")
+end
+
 -- Label setzen
 os.setComputerLabel(hostname)
 
