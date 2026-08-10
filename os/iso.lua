@@ -1,82 +1,172 @@
-local BASE_URL = "https://raw.githubusercontent.com/USER/REPO/main/"
+-- === ISO INSTALLER ===
 
-local function download(path)
-    local res = http.get(BASE_URL .. path)
-    if not res then error("Download failed: " .. path) end
-    local data = res.readAll()
-    res.close()
-    return data
-end
-
-local function save(path, data)
-    fs.makeDir(fs.getDir(path))
-    local f = fs.open(path, "w")
-    f.write(data)
-    f.close()
-end
-
--- === SETUP ===
+-- === INIT ===
 term.clear()
 term.setCursorPos(1,1)
 
-print("=== CC-OS Setup ===")
+print("=== CC Alarm System OS Installer ===")
 
+-- Modem prüfen
+local modem = peripheral.find("modem")
+if not modem then
+    error("Kein Modem gefunden!")
+end
+
+rednet.open(peripheral.getName(modem))
+
+-- === INPUT ===
 write("Hostname: ")
 local hostname = read()
 
+write("Ist dieses Gerät ein ACTOR? (true/false): ")
+local isActor = read() == "true"
+
+write("Ist dieses Gerät ein SENSOR? (true/false): ")
+local isSensor = read() == "true"
+
 write("Comm Server Name: ")
-local comm = read()
+local commServer = read()
 
 write("DNS Server Name: ")
-local dns = read()
+local dnsServer = read()
 
-write("ACTOR (true/false): ")
-local actor = read() == "true"
+-- === DNS FINDEN ===
+local function findDNSServer(name)
+    local id = rednet.lookup("nameserver", name)
+    if not id then
+        print("DNS Server nicht gefunden!")
+        return nil
+    end
+    return id
+end
 
-write("SENSOR (true/false): ")
-local sensor = read() == "true"
+local dnsID = findDNSServer(dnsServer)
+if not dnsID then return end
 
--- === CONFIG ===
-local config = string.format([[
+-- === NAME CHECK ===
+local function checkName(name)
+    rednet.send(dnsID, {
+        action = "check",
+        name = name
+    }, "ns")
+
+    local _, reply = rednet.receive("ns", 2)
+
+    if not reply then
+        return false, "DNS Timeout"
+    end
+
+    if not reply.ok then
+        return false, "Name bereits vergeben"
+    end
+
+    return true
+end
+
+-- solange Name prüfen
+while true do
+    local ok, err = checkName(hostname)
+    if ok then break end
+
+    print("Fehler:", err)
+    write("Neuer Hostname: ")
+    hostname = read()
+end
+
+-- === REGISTER ===
+local function register()
+    local deviceType = "actor"
+    if isSensor then deviceType = "sensor" end
+
+    rednet.send(dnsID, {
+        action = "register",
+        name = hostname,
+        type = deviceType
+    }, "ns")
+
+    local _, reply = rednet.receive("ns", 2)
+
+    if not reply or not reply.ok then
+        return false, reply and reply.error or "Register fehlgeschlagen"
+    end
+
+    return true
+end
+
+local ok, err = register()
+if not ok then
+    print("Registrierung fehlgeschlagen:", err)
+    return
+end
+
+print("Erfolgreich beim DNS registriert!")
+
+-- === CONFIG SCHREIBEN ===
+fs.makeDir("config")
+
+local configFile = fs.open("config/config.lua", "w")
+
+configFile.write(string.format([[
 return {
     HOSTNAME = "%s",
-    COMM_SERVER = "%s",
-    DNS_SERVER = "%s",
     ACTOR = %s,
     SENSOR = %s,
-    AUTO_RUN = false
+    COMM_SERVER = "%s",
+    DNS_SERVER = "%s"
 }
-]], hostname, comm, dns, tostring(actor), tostring(sensor))
+]], hostname, tostring(isActor), tostring(isSensor), commServer, dnsServer))
 
-save("config/config.lua", config)
+configFile.close()
 
+-- Label setzen
 os.setComputerLabel(hostname)
 
--- === SERVICE STATUS DEFAULT ===
-save("config/service_status.lua", [[
-return {
-    heartbeat = true,
-    update_listener = true
-}
-]])
+-- === OS DATEIEN INSTALLIEREN ===
 
--- === DOWNLOAD CORE ===
+local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/main/"
+
 local files = {
-    "os/main.lua",
     "os/run.lua",
     "os/network.lua",
     "os/service_manager.lua",
-    "os/updater.lua", 
+    "os/updater.lua",
     "services/heartbeat.lua",
     "services/update_listener.lua"
 }
 
+local function download(path)
+    print("Lade:", path)
+
+    local res = http.get(BASE_URL .. path)
+    if not res then
+        error("Download fehlgeschlagen: " .. path)
+    end
+
+    local data = res.readAll()
+    res.close()
+
+    fs.makeDir(fs.getDir(path))
+
+    local file = fs.open(path, "w")
+    file.write(data)
+    file.close()
+end
+
 for _, file in ipairs(files) do
-    print("Installing:", file)
-    save(file, download(file))
+    download(file)
 end
 
 -- === STARTUP ===
-save("startup.lua", 'shell.run("os/main.lua")')
+local startup = fs.open("startup.lua", "w")
 
-print("Installation complete!")
+startup.write([[
+shell.run("os/run.lua")
+]])
+
+startup.close()
+
+print("Installation abgeschlossen!")
+print("Starte neu...")
+
+sleep(2)
+os.reboot()
