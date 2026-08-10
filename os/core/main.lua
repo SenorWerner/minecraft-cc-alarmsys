@@ -16,7 +16,7 @@ local function menu()
         local choice = read()
 
         if choice == "5" then
-            shell.run("os/run.lua")
+            shell.run("core/run.lua")
         elseif choice == "6" then
             for _, file in ipairs(fs.list("/")) do
                 if file ~= "iso.lua" then
@@ -33,13 +33,13 @@ local function menu()
                 end
             end
         elseif choice == "4" then
-            shell.run("os/service_manager.lua")
+            shell.run("core/service_manager.lua")
         end
     end
 end
 
 if config.AUTO_RUN then
-    shell.run("os/run.lua")
+    shell.run("core/run.lua")
 else
     menu()
 end
