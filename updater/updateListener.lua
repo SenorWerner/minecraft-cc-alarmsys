@@ -2,7 +2,7 @@ local updater = require("updater")
 
 local function updateListener()
     while true do
-        local sender, msg, protocol = rednet.receive("control")
+        local sender, msg, protocol = rednet.receive("update")
 
         if type(msg) == "table" and msg.action == "update" then
             print("Update empfangen")
@@ -13,7 +13,7 @@ local function updateListener()
                 action = "update_result",
                 ok = ok,
                 error = err
-            }, "control")
+            }, "update")
 
             if ok then
                 print("Neustart...")
