@@ -43,7 +43,6 @@ end
 
 -- === MESSAGE HANDLER ===
 local function handler(msg, sender)
-    if !msg.id then return end
     if msg.id ~= HOST_ID then return end
 
     if msg.action == "activate" then
@@ -65,6 +64,13 @@ local function handler(msg, sender)
         id = HOST_ID,
         status = getStatus(currentAction)
     }
+    if msg.action == "status" then
+        return {
+        id = HOST_ID,
+        status = getStatus(currentAction)
+    }
+    end
+        
 end
 
 local function run()
