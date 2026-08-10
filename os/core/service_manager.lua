@@ -1,52 +1,130 @@
+-- =========================================================
+-- SERVICE MANAGER
+-- =========================================================
+
 local services = {}
 
-local function add(fn)
-    table.insert(services, fn)
-end
 
-local function run()
-    local wrapped = {}
+-- =========================================================
+-- REGISTER SERVICE
+-- =========================================================
 
-    for i, fn in ipairs(services) do
-        wrapped[i] = function()
-            while true do
-                local ok, err = pcall(fn)
-                if not ok then
-                    print("Service crashed:", err)
-                    sleep(2)
-                end
-            end
-        end
+local function add(name, fn)
+
+    if type(fn) ~= "function" then
+        print(
+            "[SERVICE MANAGER] Ungültiger Service:",
+            name
+        )
+
+        return false
     end
 
-    parallel.waitForAll(table.unpack(wrapped))
+    table.insert(services, {
+        name = name,
+        run = fn
+    })
+
+    return true
 end
 
--- UI MODE
-if ... == nil then
-    local status = require("/config/service_status")
+
+-- =========================================================
+-- SERVICE WRAPPER
+-- =========================================================
+
+local function startService(service)
 
     while true do
-        term.clear()
-        term.setCursorPos(1,1)
 
-        print("Service Manager")
-        for k,v in pairs(status) do
-            print(k, v and "[ON]" or "[OFF]")
+        print(
+            "[SERVICE START]",
+            service.name
+        )
+
+        local ok, err = pcall(service.run)
+
+        if not ok then
+
+            term.setTextColor(colors.orange)
+
+            print(
+                "[SERVICE CRASH]",
+                service.name
+            )
+
+            print(err)
+
+            term.setTextColor(colors.white)
+
+            print(
+                "Neustart in 2 Sekunden..."
+            )
+
+            sleep(2)
+
+        else
+
+            -- Ein normal zurückkehrender Service
+            -- wird ebenfalls neu gestartet.
+            print(
+                "[SERVICE STOP]",
+                service.name
+            )
+
+            print(
+                "Service wird neu gestartet..."
+            )
+
+            sleep(2)
         end
-
-        print("Toggle Service Name:")
-        local name = read()
-
-        if status[name] ~= nil then
-            status[name] = not status[name]
-        end
-
-        local f = fs.open("config/service_status.lua","w")
-        f.write("return " .. textutils.serialize(status))
-        f.close()
     end
 end
+
+
+-- =========================================================
+-- MAIN
+-- =========================================================
+
+local function run()
+
+    print(
+        "Service Manager gestartet."
+    )
+
+    local processes = {}
+
+    for _, service in ipairs(services) do
+
+        table.insert(
+            processes,
+
+            function()
+                startService(service)
+            end
+        )
+    end
+
+    if #processes == 0 then
+
+        print(
+            "Keine Hintergrund-Services registriert."
+        )
+
+        while true do
+            sleep(60)
+        end
+    end
+
+    parallel.waitForAll(
+        table.unpack(processes)
+    )
+end
+
+
+-- =========================================================
+-- EXPORT
+-- =========================================================
 
 return {
     add = add,
