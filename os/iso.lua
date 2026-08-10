@@ -126,12 +126,12 @@ os.setComputerLabel(hostname)
 local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/refs/heads/main/"
 
 local files = {
-    "os/run.lua",
-    "os/network.lua",
-    "os/service_manager.lua",
-    "os/updater.lua",
-    "services/heartbeat.lua",
-    "services/update_listener.lua"
+    "os/os/run.lua",
+    "os/os/network.lua",
+    "os/os/service_manager.lua",
+    "os/os/updater.lua",
+    "os/services/heartbeat.lua",
+    "os/services/update_listener.lua"
 }
 
 local function download(path)
