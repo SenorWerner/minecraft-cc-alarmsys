@@ -123,7 +123,7 @@ os.setComputerLabel(hostname)
 
 -- === OS DATEIEN INSTALLIEREN ===
 
-local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/main/"
+local BASE_URL = "https://github.com/SenorWerner/minecraft-cc-alarmsys/blob/main/"
 
 local files = {
     "os/run.lua",
