@@ -123,15 +123,15 @@ os.setComputerLabel(hostname)
 
 -- === OS DATEIEN INSTALLIEREN ===
 
-local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/refs/heads/main/"
+local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/refs/heads/main/os/"
 
 local files = {
-    "os/os/run.lua",
-    "os/os/network.lua",
-    "os/os/service_manager.lua",
-    "os/os/updater.lua",
-    "os/services/heartbeat.lua",
-    "os/services/update_listener.lua"
+    "core/run.lua",
+    "core/network.lua",
+    "core/service_manager.lua",
+    "core/updater.lua",
+    "core/services/heartbeat.lua",
+    "core/services/update_listener.lua"
 }
 
 local function download(path)
