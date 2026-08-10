@@ -13,11 +13,16 @@ end
 
 local function saveFile(path, data)
     local dir = fs.getDir(path)
+
     if dir and dir ~= "" and not fs.exists(dir) then
         fs.makeDir(dir)
     end
 
     local f = fs.open(path, "w")
+    if not f then
+        error("Konnte Datei nicht öffnen: " .. path)
+    end
+
     f.write(data)
     f.close()
 end
