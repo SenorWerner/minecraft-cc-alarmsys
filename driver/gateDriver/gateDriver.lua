@@ -2,7 +2,7 @@
 local config = require("/services/gateDriver/config_gateDriver")
 local core_config = require("/config/config")
 
-local HOST_ID = core_config.HOST_ID
+local HOSTNAME = core_config.HOSTNAME
 local PULSE_TIME = config.PULSE_TIME or 0.5
 local PROTOCOL = config.PROTOCOL or "control"
 
@@ -45,7 +45,6 @@ end
 -- === MESSAGE HANDLER ===
 local function handle(msg, sender, protocol)
     if protocol ~= PROTOCOL then return false end
-    if msg.id ~= HOST_ID then return end
 
     if msg.action == "activate" then
         currentAction = "activate"
@@ -63,7 +62,7 @@ local function handle(msg, sender, protocol)
     end
 
     return {
-        id = HOST_ID,
+        id = HOSTNAME,
         status = getStatus(currentAction)
     }
         
