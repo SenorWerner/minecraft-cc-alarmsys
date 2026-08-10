@@ -11,6 +11,7 @@
 |-- /services/
 |   |-- heartbeat.lua
 |   |-- update_listener.lua
+|   |-- updater.lua
 |
 |-- /config/
 |   |-- config.lua (wird erzeugt)
