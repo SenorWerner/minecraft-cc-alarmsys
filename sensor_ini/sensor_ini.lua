@@ -1,7 +1,7 @@
-local config = require("config")
+local config = require("config_sensor_ini")
 
 local HOST_ID = config.HOST_ID
-local PULSE_TIME = 0.5
+local PULSE_TIME = config.PULSE_TIME
 
 local currentAction = "deactivate"
 
