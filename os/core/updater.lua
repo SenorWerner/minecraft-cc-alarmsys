@@ -1,5 +1,5 @@
 -- === CONFIG ===
-local BASE_URL = "https://raw.githubusercontent.com/USER/REPO/main/"
+local BASE_URL = "https://raw.githubusercontent.com/SenorWerner/minecraft-cc-alarmsys/refs/heads/main/"
 local BACKUP_DIR = "/backup"
 local TEMP_DIR = "/temp"
 
