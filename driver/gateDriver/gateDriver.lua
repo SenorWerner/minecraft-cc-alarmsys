@@ -43,6 +43,7 @@ end
 
 -- === MESSAGE HANDLER ===
 local function run(msg, sender)
+    if !msg.id then return end
     if msg.id ~= HOST_ID then return end
 
     if msg.action == "activate" then
@@ -68,6 +69,6 @@ end
 
 -- === EXPORT ===
 return {
-    protocol = "gate",   -- frei wählbar (z. B. "system")
+    protocol = "control",   -- frei wählbar (z. B. "system")
     run = run
 }
