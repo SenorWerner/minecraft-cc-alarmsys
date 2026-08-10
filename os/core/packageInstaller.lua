@@ -28,10 +28,10 @@ local function saveFile(path, data)
 end
 
 -- === INSTALL ===
-local function install(packageName)
+local function install(packageName, subPath)
     print("Installiere Paket:", packageName)
 
-    local basePath = "/services/" .. packageName
+    local basePath = "services/" .. packageName
     local mainFile = packageName .. ".lua"
     local configFile = "config_" .. packageName .. ".lua"
 
@@ -40,8 +40,17 @@ local function install(packageName)
         fs.makeDir(basePath)
     end
 
+    -- === URL BASIS BAUEN ===
+    local repoPath = ""
+
+    if subPath and subPath ~= "" then
+        repoPath = subPath .. "/" .. packageName .. "/"
+    else
+        repoPath = packageName .. "/"
+    end
+
     -- === MAIN FILE ===
-    local mainUrl = BASE_URL .. packageName .. "/" .. mainFile
+    local mainUrl = BASE_URL .. repoPath .. mainFile
     print("Lade:", mainUrl)
 
     local mainData = download(mainUrl)
@@ -53,7 +62,7 @@ local function install(packageName)
     saveFile(fs.combine(basePath, mainFile), mainData)
 
     -- === CONFIG FILE ===
-    local configUrl = BASE_URL .. packageName .. "/" .. configFile
+    local configUrl = BASE_URL .. repoPath .. configFile
     print("Lade:", configUrl)
 
     local configData = download(configUrl)
@@ -77,8 +86,11 @@ end
 local args = {...}
 
 if not args[1] then
-    print("Usage: packageInstaller <paketname>")
+    print("Usage: packageInstaller <paketname> [pfad]")
+    print("Beispiel:")
+    print(" packageInstaller sensor_ini")
+    print(" packageInstaller sensor_ini driver")
     return
 end
 
-install(args[1])
+install(args[1], args[2])
