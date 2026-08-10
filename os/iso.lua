@@ -157,6 +157,7 @@ local files = {
     "core/network.lua",
     "core/service_manager.lua",
     "core/updater.lua",
+    "core/packageInstaller.lua",
     "services/heartbeat.lua",
     "services/update_listener.lua"
 }
