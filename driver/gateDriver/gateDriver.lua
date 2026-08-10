@@ -43,7 +43,7 @@ local function pulse()
 end
 
 -- === MESSAGE HANDLER ===
-local function handler(msg, sender, protocol)
+local function handle(msg, sender, protocol)
     if protocol ~= PROTOCOL then return false end
     if msg.id ~= HOST_ID then return end
 
@@ -77,7 +77,7 @@ end
 
 -- === EXPORT ===
 return {
-    protocol = "control",   -- frei wählbar (z. B. "system")
+    protocol = PROTOCOL,   -- frei wählbar (z. B. "system")
     run = run,
-    handler = handler
+    handle = handle
 }
