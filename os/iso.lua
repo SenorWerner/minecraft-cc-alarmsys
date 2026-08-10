@@ -66,9 +66,9 @@ local files = {
     "os/run.lua",
     "os/network.lua",
     "os/service_manager.lua",
+    "os/updater.lua", 
     "services/heartbeat.lua",
-    "services/update_listener.lua",
-    "updater.lua"
+    "services/update_listener.lua"
 }
 
 for _, file in ipairs(files) do
