@@ -130,8 +130,8 @@ local files = {
     "core/network.lua",
     "core/service_manager.lua",
     "core/updater.lua",
-    "core/services/heartbeat.lua",
-    "core/services/update_listener.lua"
+    "services/heartbeat.lua",
+    "services/update_listener.lua"
 }
 
 local function download(path)
