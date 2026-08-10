@@ -1,17 +1,17 @@
-local network = require("core.network")
-local sm = require("core.service_manager")
+local network = require("/core/network")
+local sm = require("/core/service_manager")
 
 local modem = peripheral.find("modem")
 rednet.open(peripheral.getName(modem))
 
-local config = require("config.config")
+local config = require("/config/config")
 rednet.host("computer", config.HOSTNAME)
 
-local status = require("config.service_status")
+local status = require("/config/service_status")
 
 for _, file in ipairs(fs.list("services")) do
     local name = file:gsub(".lua", "")
-    local service = require("services." .. name)
+    local service = require("/services/" .. name)
 
     if status[name] then
         if service.protocol then
