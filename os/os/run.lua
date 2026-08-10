@@ -1,5 +1,5 @@
-local network = require("os.network")
-local sm = require("os.service_manager")
+local network = require("core.network")
+local sm = require("core.service_manager")
 
 local modem = peripheral.find("modem")
 rednet.open(peripheral.getName(modem))
