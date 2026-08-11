@@ -1,5 +1,5 @@
 -- === CONFIG ===
-local config = require("config_gateDriver")
+local config = require("/services/gateDriver/config_gateDriver")
 local CORE_CONFIG_PATH = config.CORE_CONFIG_PATH
 local core_config = require(CORE_CONFIG_PATH)
 
