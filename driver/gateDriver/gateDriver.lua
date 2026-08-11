@@ -27,8 +27,6 @@ local DEACTIVATE_REDSTONE_SIDE = config.DEACTIVATE_REDSTONE_SIDE
 local PULSE_REDSTONE_SIDE = config.PULSE_REDSTONE_SIDE
 local PULSE_TIME = config.PULSE_TIME
 
-local
-
 -- === STATE ===
 local currentAction = "deactivate"
 
