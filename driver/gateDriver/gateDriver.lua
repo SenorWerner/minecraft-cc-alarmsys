@@ -34,12 +34,12 @@ local currentAction = "deactivate"
 local function getStatus(action)
 
     -- No Feedback ON
-    if !FEEDBACK_ACTIVE_ON and !FEEDBACK_INACTIVE_ON then
+    if not FEEDBACK_ACTIVE_ON and not FEEDBACK_INACTIVE_ON then
         return "no feedback activated"
     end
     
     -- Feedback ACTIVE on
-    if FEEDBACK_ACTIVE_ON and !FEEDBACK_INACTIVE_ON then
+    if FEEDBACK_ACTIVE_ON and not FEEDBACK_INACTIVE_ON then
         
         if redstone.getInput(FEEDBACK_SIDE_ACTIVE) and action == "activate" then
             return FEEDBACK_RETURN_STRING_ACTIVE
@@ -50,7 +50,7 @@ local function getStatus(action)
     end
     
     -- Feedback INACTIVE on
-    if FEEDBACK_INACTIVE_ON and !FEEDBACK_ACTIVE_ON then
+    if FEEDBACK_INACTIVE_ON and not FEEDBACK_ACTIVE_ON then
         if redstone.getInput(FEEDBACK_SIDE_INACTIVE) and action == "deactivate" then
             return FEEDBACK_RETURN_STRING_INACTIVE
         else
